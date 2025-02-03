@@ -2,10 +2,10 @@
     "name": "backend",
     "version": "1.0.0",
     "description": "d3y.link backend",
-    "main": "dist/index.js",
+    "main": "dist/server.js",
     "scripts": {
         "prestart": "npm run build",
-        "start": "node dist/index.js",
+        "start": "node dist/server.js",
         "dev": "nodemon --ext ts --exec ts-node src/index.ts",
         "build": "tsc",
         "test": "echo \"Error: no test specified\" && exit 1"
