@@ -10,3 +10,16 @@
 2. **FrontEnd**:
 
 ## 2. Setup
+
+## 3. Details
+
+### APIs
+
+/
+GET get links
+POST create link
+
+/:slug
+GET go to link
+PUT modify link
+DELETE delete Link
