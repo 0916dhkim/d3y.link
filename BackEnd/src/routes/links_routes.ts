@@ -15,3 +15,5 @@ router.post("/", createLink);
 router.get("/:slug", gotoLink);
 router.put("/:slug", updateLink);
 router.delete("/:slug", deleteLink);
+
+export default router;

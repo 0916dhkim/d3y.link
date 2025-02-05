@@ -1,7 +1,14 @@
 import { Request, Response } from "express";
+import pool from "../db/data_connect";
 
 export const getLinks = async (req: Request, res: Response) => {
-    // get All links
+    try {
+        const query = "SELECT * FROM shortened_urls ORDER BY create_date DESC;";
+        const { rows } = await pool.query(query);
+        res.json(rows);
+    } catch (err) {
+        console.error(err);
+    }
 };
 
 export const createLink = async (req: Request, res: Response) => {
