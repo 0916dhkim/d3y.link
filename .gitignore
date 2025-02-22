@@ -137,5 +137,4 @@ dist
 
 .DS_Store
 
-FrontEnd-public
-FrontEnd-admin
+FrontEnd
