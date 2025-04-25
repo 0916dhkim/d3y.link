@@ -99,36 +99,36 @@ export const checkSession = async (req: Request, res: Response): Promise<void> =
     }
 };
 
-export const register = async (req: Request, res: Response): Promise<void> => {
-    const { email, password } = req.body;
+// export const register = async (req: Request, res: Response): Promise<void> => {
+//     const { email, password } = req.body;
 
-    if (!email || !password) {
-        res.status(400).json({ error: "Email and password are required" });
-        return;
-    }
+//     if (!email || !password) {
+//         res.status(400).json({ error: "Email and password are required" });
+//         return;
+//     }
 
-    try {
-        const checkUser = await pool.query("SELECT * FROM users WHERE email = $1;", [email]);
-        if (checkUser.rows.length > 0) {
-            res.status(409).json({ error: "Email already exists" });
-            return;
-        }
+//     try {
+//         const checkUser = await pool.query("SELECT * FROM users WHERE email = $1;", [email]);
+//         if (checkUser.rows.length > 0) {
+//             res.status(409).json({ error: "Email already exists" });
+//             return;
+//         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+//         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const insertUser = await pool.query(
-            `INSERT INTO users (email, password, last_login)
-             VALUES ($1, $2, NOW())
-             RETURNING id, email;`,
-            [email, hashedPassword]
-        );
+//         const insertUser = await pool.query(
+//             `INSERT INTO users (email, password, last_login)
+//              VALUES ($1, $2, NOW())
+//              RETURNING id, email;`,
+//             [email, hashedPassword]
+//         );
 
-        res.status(201).json({
-            message: "Admin user registered successfully",
-            user: insertUser.rows[0],
-        });
-    } catch (error) {
-        console.error("Register Error:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
-};
+//         res.status(201).json({
+//             message: "Admin user registered successfully",
+//             user: insertUser.rows[0],
+//         });
+//     } catch (error) {
+//         console.error("Register Error:", error);
+//         res.status(500).json({ error: "Internal Server Error" });
+//     }
+// };
