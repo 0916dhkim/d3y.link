@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { fetchLinks } from "../api/links";
-import LinkBox from "./LinkBox";
+import { fetchLinks, gotoLink } from "../api/links";
+import styles from "./PublicLinkList.module.css";
 
 interface Link {
     slug: string;
@@ -20,18 +20,32 @@ const LinkList: React.FC = () => {
     }, []);
 
     return (
-        <div>
-            <ul>
+        <table className={styles.table}>
+            <thead className={styles.headerRow}>
+                <tr>
+                    <th className={styles.header}>Slug</th>
+                    <th className={styles.header}>URL</th>
+                    <th className={styles.header}>Created</th>
+                    <th className={styles.header}></th>
+                </tr>
+            </thead>
+            <tbody>
                 {links.map((link) => (
-                    <LinkBox
-                        key={link.slug}
-                        slug={link.slug}
-                        url={link.url}
-                        create_date={link.create_date}
-                    />
+                    <tr key={link.slug} className={styles.row}>
+                        <td className={`${styles.cell} ${styles.slug}`}>{link.slug}</td>
+                        <td className={`${styles.cell} ${styles.url}`}>{link.url}</td>
+                        <td className={styles.cell}>
+                            {new Date(link.create_date).toLocaleDateString()}
+                        </td>
+                        <td className={styles.cell}>
+                            <button className={styles.button} onClick={() => gotoLink(link.slug)}>
+                                Go
+                            </button>
+                        </td>
+                    </tr>
                 ))}
-            </ul>
-        </div>
+            </tbody>
+        </table>
     );
 };
 

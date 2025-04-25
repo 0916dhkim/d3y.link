@@ -1,10 +1,11 @@
 import React from "react";
 import LinkList from "../components/PublicLinkList";
+import styles from "./PublicHome.module.css";
 
 const Home: React.FC = () => {
     return (
-        <div>
-            <h2>D3Y.Link</h2>
+        <div className={styles.container}>
+            <h1 className={styles.title}>D3Y.Link</h1>
             <LinkList />
         </div>
     );

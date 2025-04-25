@@ -1,0 +1,24 @@
+:root {
+    --font-main: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --color-bg: #fefaf7;
+    --color-text: #7c4a3c;
+    --color-accent: #db8c7a;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 50px 24px;
+    text-align: center;
+    background-color: var(--color-bg);
+    font-family: var(--font-main);
+    color: var(--color-text);
+}
+
+.title {
+    font-size: 2.3rem;
+    margin-bottom: 40px;
+    color: var(--color-accent);
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
