@@ -57,7 +57,8 @@ This project contains **both FrontEnd and BackEnd** code.
     Public homepage that displays all shortened links in descending order of creation
 
 -   `/dashboard`  
-    Admin-only dashboard (requires login). Features include:
+    Admin-only dashboard (requires login).
+    Features include:
     -   Viewing a table of all links
     -   Creating new short links (opens modal)
     -   Editing and deleting links (modal UI)
