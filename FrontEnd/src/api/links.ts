@@ -24,11 +24,11 @@ export const createLink = async (slug: string, url: string) => {
     }
 };
 
-export const updateLink = async (slug: string, url: string) => {
+export const updateLink = async (slug: string, url: string, newSlug: string) => {
     try {
         const response = await axios.put(
             `${API_LINK_URL}/${slug}`,
-            { url },
+            { url, slug: newSlug },
             { withCredentials: true }
         );
         console.log("updateLink:", response.data);

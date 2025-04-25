@@ -1,41 +1,40 @@
 import React, { useState } from "react";
-import { updateLink } from "../api/links";
+import { createLink } from "../api/links";
 import styles from "./Modal.module.css";
 
 interface Props {
-    link: { slug: string; url: string };
+    onCreate: () => void;
     onClose: () => void;
-    onSave: () => void;
 }
 
-const EditLinkModal: React.FC<Props> = ({ link, onClose, onSave }) => {
-    const [newSlug, setNewSlug] = useState(link.slug);
-    const [url, setUrl] = useState(link.url);
+const CreateLinkModal: React.FC<Props> = ({ onCreate, onClose }) => {
+    const [slug, setSlug] = useState("");
+    const [url, setUrl] = useState("");
     const [error, setError] = useState("");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await updateLink(link.slug, url, newSlug);
-            onSave();
+            await createLink(slug, url);
+            setSlug("");
+            setUrl("");
+            onCreate();
             onClose();
         } catch (err: any) {
-            setError(err.response?.data?.error || "Failed to update link");
+            setError(err.response?.data?.error || "Failed to create link");
         }
     };
 
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>
-                <h3>
-                    Edit Link: <code>{link.slug}</code>
-                </h3>
+                <h3>Create New Link</h3>
                 {error && <p className={styles.error}>{error}</p>}
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <input
                         type="text"
-                        value={newSlug}
-                        onChange={(e) => setNewSlug(e.target.value)}
+                        value={slug}
+                        onChange={(e) => setSlug(e.target.value)}
                         placeholder="Slug"
                         required
                     />
@@ -48,7 +47,7 @@ const EditLinkModal: React.FC<Props> = ({ link, onClose, onSave }) => {
                     />
                     <div className={styles.buttonGroup}>
                         <button type="submit" className={styles.primary}>
-                            Save
+                            Create
                         </button>
                         <button type="button" onClick={onClose} className={styles.cancel}>
                             Cancel
@@ -60,4 +59,4 @@ const EditLinkModal: React.FC<Props> = ({ link, onClose, onSave }) => {
     );
 };
 
-export default EditLinkModal;
+export default CreateLinkModal;
