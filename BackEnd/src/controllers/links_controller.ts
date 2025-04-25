@@ -65,25 +65,33 @@ export const gotoLink = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const updateLink = async (req: Request, res: Response): Promise<void> => {
-    const { slug } = req.params;
-    const { url } = req.body;
+    const originalSlug = req.params.slug;
+    const { url, slug: newSlug } = req.body;
 
-    if (!url) {
-        res.status(400).json({ message: "URL is required" });
+    if (!url || !newSlug) {
+        res.status(400).json({ error: "Both URL and slug are required" });
         return;
     }
 
-    const existing = await findLinkBySlug(slug);
-    if (!existing) {
-        res.status(404).json({ error: "Slug not found" });
-        return;
-    }
     try {
+        const existing = await findLinkBySlug(originalSlug);
+        if (!existing) {
+            res.status(404).json({ error: "Slug not found" });
+            return;
+        }
+
+        if (newSlug !== originalSlug) {
+            const slugExists = await findLinkBySlug(newSlug);
+            if (slugExists) {
+                res.status(409).json({ error: "Slug already exists" });
+                return;
+            }
+        }
         const updateQuery = `UPDATE shortened_links
-                                SET url = $1
-                                WHERE slug = $2
-                                RETURNING *;`;
-        const updateLink = await pool.query(updateQuery, [url, slug]);
+                        SET url = $1, slug = $2, update_date = NOW()
+                        WHERE slug = $3
+                        RETURNING *;`;
+        const updateLink = await pool.query(updateQuery, [url, newSlug, originalSlug]);
         if (updateLink.rows.length === 0) {
             res.status(404).json({ error: "Failed to update link" });
             return;
