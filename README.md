@@ -176,8 +176,6 @@ This project contains **both FrontEnd and BackEnd** code.
 | `password`   | TEXT      | Hashed with bcrypt          |
 | `last_login` | TIMESTAMP | Timestamp of the last login |
 
----
-
 ## `sessions`
 
 | Column          | Type      | Description                |
@@ -186,8 +184,6 @@ This project contains **both FrontEnd and BackEnd** code.
 | `user_id`       | INTEGER   | Foreign Key → `users.id`   |
 | `session_token` | TEXT      | Randomly generated token   |
 | `created_at`    | TIMESTAMP | Session creation timestamp |
-
----
 
 ## `links`
 
@@ -206,8 +202,6 @@ This project contains **both FrontEnd and BackEnd** code.
 -   Sessions expire after **7 days**.
 -   Users can refresh the session manually via UI.
 -   Once expired, users are logged out and redirected to the login page.
-
----
 
 ## 8. UI Components
 
