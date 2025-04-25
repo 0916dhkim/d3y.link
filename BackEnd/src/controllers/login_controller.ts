@@ -39,8 +39,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
         res.cookie("session_token", sessionToken, {
             httpOnly: true,
-            //secure: process.env.NODE_ENV === "production",
-            secure: false,
+            secure: process.env.NODE_ENV === "production",
+            //secure: false,
             sameSite: "strict",
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
