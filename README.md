@@ -67,10 +67,12 @@ This project contains **both FrontEnd and BackEnd** code.
 
 ### 3.2 Backend API Endpoints
 
+### `api/links`
+
 #### `GET /`
 
 -   **Description**: Fetch all shortened links
--   **Response**:
+-   **Response** (on success):
 
 ```json
 [
@@ -98,7 +100,7 @@ This project contains **both FrontEnd and BackEnd** code.
 }
 ```
 
--   **Response**:
+-   **Response** (on success):
 
 ```json
 {
@@ -127,7 +129,7 @@ This project contains **both FrontEnd and BackEnd** code.
 }
 ```
 
--   **Response**:
+-   **Response**(on success):
 
 ```json
 {
@@ -143,16 +145,79 @@ This project contains **both FrontEnd and BackEnd** code.
 }
 ```
 
-### `DELETE /:slug`
+#### `DELETE /:slug`
 
 -   **Description**: Delete the short link by slug
--   **Response**:
+-   **Response** (on success):
 
 ```json
 {
     "message": "Link deleted successfully"
 }
 ```
+
+### `/api/auth`
+
+#### `POST /login`
+
+-   **Description**: Authenticate admin user and create a session
+-   **Request Body**:
+
+```json
+{
+    "email": "admin@example.com",
+    "password": "yourPassword123"
+}
+```
+
+-   **Response** (on success):
+
+```json
+{
+    "message": "Login successful"
+}
+```
+
+#### `POST /logout`
+
+-   **Description**: Invalidate the current session and log out the user
+-   **Response** (on success):
+
+```json
+{
+    "message": "Logged out successfully"
+}
+```
+
+#### `GET /session`
+
+-   **Description**: Check if the session is still valid
+-   **Response** (on success):
+
+```json
+{
+    "message": "Authenticated",
+    "createdAt": "2025-04-25T13:20:15.000Z",
+    "user": {
+        "id": 1,
+        "email": "admin@example.com"
+    }
+}
+```
+
+#### `POST /refresh`
+
+-   **Description**: Manually refresh session expiry to extend login time
+-   **Response** (on success):
+
+```json
+{
+    "message": "Session refreshed",
+    "createdAt": "2025-04-25T14:11:05.000Z"
+}
+```
+
+-   **Set-Cookie**: `session_token` (same properties as login)
 
 ## 5. Authentication & Sessions
 
