@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
-import { checkSession, logout } from "../api/auth";
+import { checkSession, logout, refreshSession } from "../api/auth";
 import { fetchLinks } from "../api/links";
 import LinkList from "../components/LinkList";
 import CreateLinkModal from "../components/CreateLinkModal";
@@ -13,41 +12,38 @@ const Dashboard: React.FC = () => {
     const [links, setLinks] = useState([]);
     const [showCreate, setShowCreate] = useState(false);
     const [remainingTime, setRemainingTime] = useState<number>(0);
+    const [sessionCreated, setSessionCreated] = useState<number | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
         checkSession()
-            .then(() => {
+            .then((res) => {
+                const createdTime = new Date(res.createdAt).getTime();
+                setSessionCreated(createdTime);
                 loadLinks();
-                calculateRemaining();
             })
             .catch(() => navigate("/"));
     }, [navigate]);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            calculateRemaining();
+            if (sessionCreated) calculateRemaining(sessionCreated);
         }, 1000);
         return () => clearInterval(interval);
-    }, []);
+    }, [sessionCreated]);
 
-    const calculateRemaining = () => {
-        const sessionCreated = Cookies.get("session_created");
-        if (!sessionCreated) return;
-
-        const createdTime = new Date(sessionCreated).getTime();
+    const calculateRemaining = (createdTime: number) => {
         const expireTime = createdTime + SESSION_DURATION_MS;
         const now = new Date().getTime();
-
         const diff = Math.max(0, expireTime - now);
         setRemainingTime(diff);
     };
 
     const handleRefresh = async () => {
         try {
-            await checkSession(); // 세션 유지 호출
-            Cookies.set("session_created", new Date().toISOString(), { sameSite: "strict" });
-            calculateRemaining(); // 즉시 갱신
+            const res = await refreshSession();
+            const createdTime = new Date(res.createdAt).getTime();
+            setSessionCreated(createdTime);
         } catch {
             navigate("/");
         }

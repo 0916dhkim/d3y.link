@@ -92,9 +92,54 @@ export const checkSession = async (req: Request, res: Response): Promise<void> =
             return;
         }
 
-        res.status(200).json({ message: "Authenticated", user: sessionResult.rows[0] });
+        res.status(200).json({
+            message: "Authenticated",
+            createdAt: sessionResult.rows[0].created_at,
+            user: {
+                id: sessionResult.rows[0].id,
+                email: sessionResult.rows[0].email,
+            },
+        });
     } catch (error) {
         console.error("Session Check Error:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+export const refreshSession = async (req: Request, res: Response): Promise<void> => {
+    const sessionToken = req.cookies.session_token;
+
+    if (!sessionToken) {
+        res.status(401).json({ error: "Not authenticated" });
+        return;
+    }
+
+    try {
+        const result = await pool.query(
+            `UPDATE sessions SET created_at = NOW()
+             WHERE session_token = $1
+             RETURNING created_at;`,
+            [sessionToken]
+        );
+
+        if (result.rows.length === 0) {
+            res.status(401).json({ error: "Session not found" });
+            return;
+        }
+
+        res.cookie("session_token", sessionToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        res.status(200).json({
+            message: "Session refreshed",
+            createdAt: result.rows[0].created_at,
+        });
+    } catch (error) {
+        console.error("Refresh Session Error:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 };

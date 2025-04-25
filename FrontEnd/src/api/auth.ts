@@ -40,3 +40,14 @@ export const checkSession = async () => {
         throw error;
     }
 };
+
+export const refreshSession = async () => {
+    try {
+        const response = await axios.post(`${API_AUTH_URL}/refresh`, {}, { withCredentials: true });
+        console.log("refreshSession:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Error refreshing session:", error);
+        throw error;
+    }
+};
