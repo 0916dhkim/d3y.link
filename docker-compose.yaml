@@ -29,6 +29,9 @@ services:
   backend:
     build:
       context: ./BackEnd
+    environment:
+      - PORT
+      - DATABASE_URL
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
