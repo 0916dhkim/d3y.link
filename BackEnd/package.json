@@ -17,6 +17,7 @@
         "cookie-parser": "^1.4.7",
         "cors": "^2.8.5",
         "dotenv": "^16.4.7",
+        "drizzle-orm": "^0.43.1",
         "express": "^4.21.2",
         "express-session": "^1.18.1",
         "pg": "^8.13.1",
@@ -28,8 +29,10 @@
         "@types/express": "^5.0.0",
         "@types/express-session": "^1.18.1",
         "@types/pg": "^8.11.11",
+        "drizzle-kit": "^0.31.1",
         "nodemon": "^3.1.9",
         "ts-node": "^10.9.2",
+        "tsx": "^4.19.4",
         "typescript": "^5.7.3"
     }
 }

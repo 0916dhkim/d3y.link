@@ -32,8 +32,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
         await pool.query(
             `INSERT INTO sessions (user_id, session_token)
-             VALUES ($1, $2)
-             ON CONFLICT (user_id) DO UPDATE SET session_token = $2, created_at = NOW();`,
+             VALUES ($1, $2);`,
             [user.id, sessionToken]
         );
 

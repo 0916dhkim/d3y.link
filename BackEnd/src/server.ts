@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -9,7 +9,7 @@ const app = express();
 
 dotenv.config();
 
-const FRONT_END = process.env.FRONT_END_URL || `http://localhost:3000`;
+const PORT = process.env.PORT || '8000';
 
 app.use(
     cors({
@@ -25,6 +25,6 @@ app.use("/api/links", linkRoutes);
 
 app.use("/api/auth", loginRoutes);
 
-app.listen(process.env.PORT, () => {
-    console.log(`Server is running at http://localhost:${process.env.PORT}`);
+app.listen(PORT, () => {
+    console.log(`Server is running at http://localhost:${PORT}`);
 });
