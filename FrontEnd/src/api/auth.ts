@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_AUTH_URL = process.env.API_AUTH_URL || "http://localhost:8000/api/auth";
+const API_AUTH_URL = new URL('/api/auth', window.origin).toString();
 
 export const login = async (email: string, password: string) => {
     try {

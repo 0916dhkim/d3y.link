@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_LINK_URL = process.env.API_LINK_URL || "http://localhost:8000/api/links";
+const API_LINK_URL = new URL('/api/links', window.origin).toString();
 
 export const fetchLinks = async () => {
     try {
