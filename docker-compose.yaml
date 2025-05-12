@@ -4,6 +4,8 @@ services:
   frontend:
     build:
       context: ./FrontEnd
+    ports:
+      - 6767:80
     networks:
       - d3y
 
