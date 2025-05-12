@@ -30,6 +30,26 @@
     box-sizing: border-box;
 }
 
+.inputGroup {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+
+  & input {
+    width: auto;
+    flex: 1;
+  }
+}
+
+.infoGroup {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  color: #888;
+}
+
 .buttonGroup {
     display: flex;
     justify-content: space-between;
