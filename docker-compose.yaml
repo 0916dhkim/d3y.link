@@ -1,28 +1,9 @@
 version: "3.8"
 
 services:
-  traefik:
-    image: traefik:v2.11
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.network=d3y"
-      - "--entrypoints.web.address=:80"
-    ports:
-      - "6767:80"
-      - "8080:8080" # Traefik dashboard
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    networks:
-      - d3y
-
   frontend:
     build:
       context: ./FrontEnd
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.frontend.entrypoints=web"
     networks:
       - d3y
 
@@ -32,10 +13,6 @@ services:
     environment:
       - PORT
       - DATABASE_URL
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
-      - "traefik.http.routers.backend.entrypoints=web"
     networks:
       - d3y
 
