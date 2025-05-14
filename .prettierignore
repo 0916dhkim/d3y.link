@@ -1,1 +1,2 @@
-drizzle/
+drizzle/ # Generated code
+docker-compose.yaml # Dokploy edits this file.
