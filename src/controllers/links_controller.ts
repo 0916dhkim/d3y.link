@@ -75,6 +75,9 @@ export const updateLink = async (
   res: Response,
 ): Promise<void> => {
   const originalSlug = req.params.slug;
+  if (originalSlug == null) {
+    throw new Error("Slug is required");
+  }
   const { url, slug: newSlug } = req.body;
 
   if (!url || !newSlug) {
