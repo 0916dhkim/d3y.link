@@ -6,6 +6,8 @@
   "scripts": {
     "build": "react-router build",
     "start": "cross-env NODE_ENV=production tsx src/server.ts",
+    "lint": "prettier --check .",
+    "prettier:fix": "prettier --write .",
     "dev": "tsx src/server.ts"
   },
   "dependencies": {
