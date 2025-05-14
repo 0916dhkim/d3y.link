@@ -19,7 +19,7 @@ export async function integrateReactRouter(app: Express) {
 function registerCompiledAssetMiddlewares(app: Express) {
   app.use(
     "/assets",
-    express.static("build/client/assets", { immutable: true, maxAge: "1y" })
+    express.static("build/client/assets", { immutable: true, maxAge: "1y" }),
   );
   app.use(express.static("build/client"));
 }
@@ -27,21 +27,21 @@ function registerCompiledAssetMiddlewares(app: Express) {
 async function registerProdSsrMiddleware(app: Express) {
   const COMPILED_SSR_HANDLER_PATH = "../build/server/index.js";
   app.use(
-    createRequestHandler({ build: await import(COMPILED_SSR_HANDLER_PATH) })
+    createRequestHandler({ build: await import(COMPILED_SSR_HANDLER_PATH) }),
   );
 }
 
 async function registerDevSsrMiddleware(
   app: Express,
-  viteDevServer: ViteDevServer
+  viteDevServer: ViteDevServer,
 ) {
   app.use(
     createRequestHandler({
       build: () =>
         viteDevServer.ssrLoadModule(
-          "virtual:react-router/server-build"
+          "virtual:react-router/server-build",
         ) as Promise<ServerBuild>,
-    })
+    }),
   );
 }
 

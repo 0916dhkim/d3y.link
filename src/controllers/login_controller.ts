@@ -4,143 +4,151 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
 export const login = async (req: Request, res: Response): Promise<void> => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    if (!email || !password) {
-        res.status(400).json({ error: "Email and password are required" });
-        return;
+  if (!email || !password) {
+    res.status(400).json({ error: "Email and password are required" });
+    return;
+  }
+
+  try {
+    const userQuery = "SELECT * FROM users WHERE email = $1;";
+    const userResult = await pool.query(userQuery, [email]);
+
+    if (userResult.rows.length === 0) {
+      res.status(401).json({ error: "Invalid email or password" });
+      return;
     }
 
-    try {
-        const userQuery = "SELECT * FROM users WHERE email = $1;";
-        const userResult = await pool.query(userQuery, [email]);
+    const user = userResult.rows[0];
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
-        if (userResult.rows.length === 0) {
-            res.status(401).json({ error: "Invalid email or password" });
-            return;
-        }
+    if (!isPasswordValid) {
+      res.status(401).json({ error: "Invalid email or password" });
+      return;
+    }
 
-        const user = userResult.rows[0];
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+    const sessionToken = crypto.randomBytes(64).toString("hex");
 
-        if (!isPasswordValid) {
-            res.status(401).json({ error: "Invalid email or password" });
-            return;
-        }
-
-        const sessionToken = crypto.randomBytes(64).toString("hex");
-
-        await pool.query(
-            `INSERT INTO sessions (user_id, session_token)
+    await pool.query(
+      `INSERT INTO sessions (user_id, session_token)
              VALUES ($1, $2);`,
-            [user.id, sessionToken]
-        );
+      [user.id, sessionToken],
+    );
 
-        res.cookie("session_token", sessionToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            //secure: false,
-            sameSite: "strict",
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        });
+    res.cookie("session_token", sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      //secure: false,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
 
-        res.status(200).json({ message: "Login successful" });
-    } catch (error) {
-        console.error("Login Error:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
+    res.status(200).json({ message: "Login successful" });
+  } catch (error) {
+    console.error("Login Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 export const logout = async (req: Request, res: Response): Promise<void> => {
-    const sessionToken = req.cookies.session_token;
+  const sessionToken = req.cookies.session_token;
 
-    if (!sessionToken) {
-        res.status(400).json({ error: "No session token provided" });
-        return;
-    }
+  if (!sessionToken) {
+    res.status(400).json({ error: "No session token provided" });
+    return;
+  }
 
-    try {
-        await pool.query("DELETE FROM sessions WHERE session_token = $1;", [sessionToken]);
-        res.clearCookie("session_token");
-        res.status(200).json({ message: "Logged out successfully" });
-    } catch (error) {
-        console.error("Logout Error:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
+  try {
+    await pool.query("DELETE FROM sessions WHERE session_token = $1;", [
+      sessionToken,
+    ]);
+    res.clearCookie("session_token");
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error("Logout Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
-export const checkSession = async (req: Request, res: Response): Promise<void> => {
-    const sessionToken = req.cookies.session_token;
+export const checkSession = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const sessionToken = req.cookies.session_token;
 
-    if (!sessionToken) {
-        res.status(401).json({ error: "Not authenticated" });
-        return;
-    }
+  if (!sessionToken) {
+    res.status(401).json({ error: "Not authenticated" });
+    return;
+  }
 
-    try {
-        const sessionQuery = `
+  try {
+    const sessionQuery = `
             SELECT u.id, u.email, s.created_at
             FROM sessions s
             JOIN users u ON s.user_id = u.id
             WHERE s.session_token = $1;
         `;
-        const sessionResult = await pool.query(sessionQuery, [sessionToken]);
+    const sessionResult = await pool.query(sessionQuery, [sessionToken]);
 
-        if (sessionResult.rows.length === 0) {
-            res.status(401).json({ error: "Session expired" });
-            return;
-        }
-
-        res.status(200).json({
-            message: "Authenticated",
-            createdAt: sessionResult.rows[0].created_at,
-            user: {
-                id: sessionResult.rows[0].id,
-                email: sessionResult.rows[0].email,
-            },
-        });
-    } catch (error) {
-        console.error("Session Check Error:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+    if (sessionResult.rows.length === 0) {
+      res.status(401).json({ error: "Session expired" });
+      return;
     }
+
+    res.status(200).json({
+      message: "Authenticated",
+      createdAt: sessionResult.rows[0].created_at,
+      user: {
+        id: sessionResult.rows[0].id,
+        email: sessionResult.rows[0].email,
+      },
+    });
+  } catch (error) {
+    console.error("Session Check Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
-export const refreshSession = async (req: Request, res: Response): Promise<void> => {
-    const sessionToken = req.cookies.session_token;
+export const refreshSession = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const sessionToken = req.cookies.session_token;
 
-    if (!sessionToken) {
-        res.status(401).json({ error: "Not authenticated" });
-        return;
-    }
+  if (!sessionToken) {
+    res.status(401).json({ error: "Not authenticated" });
+    return;
+  }
 
-    try {
-        const result = await pool.query(
-            `UPDATE sessions SET created_at = NOW()
+  try {
+    const result = await pool.query(
+      `UPDATE sessions SET created_at = NOW()
              WHERE session_token = $1
              RETURNING created_at;`,
-            [sessionToken]
-        );
+      [sessionToken],
+    );
 
-        if (result.rows.length === 0) {
-            res.status(401).json({ error: "Session not found" });
-            return;
-        }
-
-        res.cookie("session_token", sessionToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
-
-        res.status(200).json({
-            message: "Session refreshed",
-            createdAt: result.rows[0].created_at,
-        });
-    } catch (error) {
-        console.error("Refresh Session Error:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+    if (result.rows.length === 0) {
+      res.status(401).json({ error: "Session not found" });
+      return;
     }
+
+    res.cookie("session_token", sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      message: "Session refreshed",
+      createdAt: result.rows[0].created_at,
+    });
+  } catch (error) {
+    console.error("Refresh Session Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 // export const register = async (req: Request, res: Response): Promise<void> => {

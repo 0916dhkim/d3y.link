@@ -32,17 +32,17 @@ This project contains **both FrontEnd and BackEnd** code.
 
 ### 3.1 Frontend URLs
 
--   `/`  
-    Public homepage that displays all shortened links in descending order of creation
+- `/`  
+  Public homepage that displays all shortened links in descending order of creation
 
--   `/dashboard`  
-    Admin-only dashboard (requires login).  
-    Features include:
-    -   Viewing a table of all links
-    -   Creating new short links (opens modal)
-    -   Editing and deleting links (modal UI)
-    -   Copy link button / Visit link button
-    -   Auto logout timer (7-day expiration) with refresh option
+- `/dashboard`  
+  Admin-only dashboard (requires login).  
+  Features include:
+  - Viewing a table of all links
+  - Creating new short links (opens modal)
+  - Editing and deleting links (modal UI)
+  - Copy link button / Visit link button
+  - Auto logout timer (7-day expiration) with refresh option
 
 ### 3.2 Backend API Endpoints
 
@@ -50,8 +50,8 @@ This project contains **both FrontEnd and BackEnd** code.
 
 #### `GET /`
 
--   **Description**: Fetch all shortened links
--   **Response** (on success):
+- **Description**: Fetch all shortened links
+- **Response** (on success):
 
 ```json
 [
@@ -69,69 +69,69 @@ This project contains **both FrontEnd and BackEnd** code.
 
 #### `POST /`
 
--   **Description**: Create a new short link
--   **Request Body**:
+- **Description**: Create a new short link
+- **Request Body**:
 
 ```json
 {
-    "slug": "abc123",
-    "url": "https://example.com"
+  "slug": "abc123",
+  "url": "https://example.com"
 }
 ```
 
--   **Response** (on success):
+- **Response** (on success):
 
 ```json
 {
-    "slug": "test4",
-    "url": "https://test4.com",
-    "create_date": "2025-04-25T13:17:34.527Z",
-    "update_date": "2025-04-25T13:17:34.527Z",
-    "clicks": 0,
-    "last_click": null
+  "slug": "test4",
+  "url": "https://test4.com",
+  "create_date": "2025-04-25T13:17:34.527Z",
+  "update_date": "2025-04-25T13:17:34.527Z",
+  "clicks": 0,
+  "last_click": null
 }
 ```
 
 #### `GET /:slug`
 
--   **Description**: Redirects to the original URL and increases click count. Also update last_click time.
+- **Description**: Redirects to the original URL and increases click count. Also update last_click time.
 
 #### `PUT /:slug`
 
--   **Description**: Update the original URL and slug for a given slug
--   **Request Body**:
+- **Description**: Update the original URL and slug for a given slug
+- **Request Body**:
 
 ```json
 {
-    "slug": "test5",
-    "url": "https://test5.com"
+  "slug": "test5",
+  "url": "https://test5.com"
 }
 ```
 
--   **Response**(on success):
+- **Response**(on success):
 
 ```json
 {
-    "message": "Link updated successfully",
-    "link": {
-        "slug": "test5",
-        "url": "https://test5.com",
-        "create_date": "2025-04-25T13:17:34.527Z",
-        "update_date": "2025-04-25T13:23:55.802Z",
-        "clicks": 1,
-        "last_click": "2025-04-25T13:18:56.229Z"
-    }
+  "message": "Link updated successfully",
+  "link": {
+    "slug": "test5",
+    "url": "https://test5.com",
+    "create_date": "2025-04-25T13:17:34.527Z",
+    "update_date": "2025-04-25T13:23:55.802Z",
+    "clicks": 1,
+    "last_click": "2025-04-25T13:18:56.229Z"
+  }
 }
 ```
 
 #### `DELETE /:slug`
 
--   **Description**: Delete the short link by slug
--   **Response** (on success):
+- **Description**: Delete the short link by slug
+- **Response** (on success):
 
 ```json
 {
-    "message": "Link deleted successfully"
+  "message": "Link deleted successfully"
 }
 ```
 
@@ -139,76 +139,76 @@ This project contains **both FrontEnd and BackEnd** code.
 
 #### `POST /login`
 
--   **Description**: Authenticate admin user and create a session
--   **Request Body**:
+- **Description**: Authenticate admin user and create a session
+- **Request Body**:
 
 ```json
 {
-    "email": "admin@example.com",
-    "password": "yourPassword123"
+  "email": "admin@example.com",
+  "password": "yourPassword123"
 }
 ```
 
--   **Response** (on success):
+- **Response** (on success):
 
 ```json
 {
-    "message": "Login successful"
+  "message": "Login successful"
 }
 ```
 
 #### `POST /logout`
 
--   **Description**: Invalidate the current session and log out the user
--   **Response** (on success):
+- **Description**: Invalidate the current session and log out the user
+- **Response** (on success):
 
 ```json
 {
-    "message": "Logged out successfully"
+  "message": "Logged out successfully"
 }
 ```
 
 #### `GET /session`
 
--   **Description**: Check if the session is still valid
--   **Response** (on success):
+- **Description**: Check if the session is still valid
+- **Response** (on success):
 
 ```json
 {
-    "message": "Authenticated",
-    "createdAt": "2025-04-25T13:20:15.000Z",
-    "user": {
-        "id": 1,
-        "email": "admin@example.com"
-    }
+  "message": "Authenticated",
+  "createdAt": "2025-04-25T13:20:15.000Z",
+  "user": {
+    "id": 1,
+    "email": "admin@example.com"
+  }
 }
 ```
 
 #### `POST /refresh`
 
--   **Description**: Manually refresh session expiry to extend login time
--   **Response** (on success):
+- **Description**: Manually refresh session expiry to extend login time
+- **Response** (on success):
 
 ```json
 {
-    "message": "Session refreshed",
-    "createdAt": "2025-04-25T14:11:05.000Z"
+  "message": "Session refreshed",
+  "createdAt": "2025-04-25T14:11:05.000Z"
 }
 ```
 
--   **Set-Cookie**: `session_token` (same properties as login)
+- **Set-Cookie**: `session_token` (same properties as login)
 
 ## 5. Authentication & Sessions
 
--   Admin logs in via email and password.
+- Admin logs in via email and password.
 
--   On login:
+- On login:
 
-    -   A session_token is created and stored in the DB
-    -   The token is returned to the client in a secure cookie (HttpOnly, SameSite=Strict).
+  - A session_token is created and stored in the DB
+  - The token is returned to the client in a secure cookie (HttpOnly, SameSite=Strict).
 
--   Sessions are valid for 7 days since last access.
--   Session can be checked (GET /session) and destroyed (POST /logout).
+- Sessions are valid for 7 days since last access.
+- Session can be checked (GET /session) and destroyed (POST /logout).
 
 ## 6. Database Schema
 
@@ -243,24 +243,24 @@ This project contains **both FrontEnd and BackEnd** code.
 
 ## 7. Auto Logout Behavior
 
--   A timer shows remaining time until auto logout.
--   Sessions expire after **7 days**.
--   Users can refresh the session manually via UI.
--   Once expired, users are logged out and redirected to the login page.
+- A timer shows remaining time until auto logout.
+- Sessions expire after **7 days**.
+- Users can refresh the session manually via UI.
+- Once expired, users are logged out and redirected to the login page.
 
 ## 8. UI Components
 
 ### Pages
 
--   `Login.tsx`: Admin login page
--   `Dashboard.tsx`: Authenticated dashboard for admin
--   `PublicHome.tsx`: Public link list view
+- `Login.tsx`: Admin login page
+- `Dashboard.tsx`: Authenticated dashboard for admin
+- `PublicHome.tsx`: Public link list view
 
 ### Components
 
--   `CreateLinkModal.tsx`: Modal for adding a new link
--   `DeleteConfirmModal.tsx`: Confirmation modal shown before deleting a link
--   `EditLinkModal.tsx`: Modal for updating an existing link
--   `LinkList.tsx`: Table displaying all links in the admin dashboard
--   `ProtectedRoute.tsx`: Wrapper to restrict routes to authenticated users only
--   `PublicLinkList.tsx`: Displays public-facing list of links on the homepage
+- `CreateLinkModal.tsx`: Modal for adding a new link
+- `DeleteConfirmModal.tsx`: Confirmation modal shown before deleting a link
+- `EditLinkModal.tsx`: Modal for updating an existing link
+- `LinkList.tsx`: Table displaying all links in the admin dashboard
+- `ProtectedRoute.tsx`: Wrapper to restrict routes to authenticated users only
+- `PublicLinkList.tsx`: Displays public-facing list of links on the homepage
