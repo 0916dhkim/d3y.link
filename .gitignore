@@ -139,3 +139,6 @@ dist
 
 **/build
 **/dist
+
+# React Router
+.react-router

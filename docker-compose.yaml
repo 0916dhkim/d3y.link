@@ -1,23 +1,6 @@
 version: "3.8"
 
 services:
-  frontend:
+  app:
     build:
-      context: ./FrontEnd
-    ports:
-      - 6767:80
-    networks:
-      - d3y
-
-  backend:
-    build:
-      context: ./BackEnd
-    environment:
-      - PORT
-      - DATABASE_URL
-    networks:
-      - d3y
-
-networks:
-  d3y:
-    external: false
+      context: .
