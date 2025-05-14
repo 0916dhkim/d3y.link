@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDirs": [".", ".react-router/types"],
     "target": "ES2022",
-    "types": ["node"],
+    "types": ["node", "vite/client"],
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,

@@ -1,0 +1,10 @@
+:root {
+    --font-main: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --color-bg: #fefaf7;
+    --color-text: #7c4a3c;
+    --color-border: #e5bfae;
+    --color-button: #db8c7a;
+    --color-accent: #db8c7a;
+    --color-button-hover: #c67562;
+    --color-header: #88304e;
+}

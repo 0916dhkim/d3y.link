@@ -7,20 +7,21 @@
     border-collapse: collapse;
     font-family: "Helvetica Neue", sans-serif;
     font-size: 14px;
+
+    & th, td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+    }
+
+    & th {
+        background-color: #fafafa;
+        font-weight: 600;
+        color: #333;
+    }
 }
 
-th,
-td {
-    padding: 12px 16px;
-    border-bottom: 1px solid #eee;
-    text-align: left;
-}
 
-th {
-    background-color: #fafafa;
-    font-weight: 600;
-    color: #333;
-}
 
 .url {
     color: #888;
