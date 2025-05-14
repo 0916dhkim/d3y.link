@@ -79,7 +79,7 @@ const Dashboard: React.FC = () => {
     <div className={styles.container}>
       <aside className={styles.sidebar}>
         <h1 className={styles.logo}>
-          D3Y.Link
+          d3y.link
           <br />
           Dashboard
         </h1>

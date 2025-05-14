@@ -5,7 +5,7 @@ import styles from "./PublicHome.module.css";
 const Home: React.FC = () => {
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>D3Y.Link</h1>
+      <h1 className={styles.title}>d3y.link</h1>
       <LinkList />
     </div>
   );

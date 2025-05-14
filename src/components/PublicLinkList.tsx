@@ -34,7 +34,7 @@ const LinkList: React.FC = () => {
           <tr key={link.slug} className={styles.row}>
             <td className={`${styles.cell} ${styles.slug}`}>{link.slug}</td>
             <td className={`${styles.cell} ${styles.url}`}>{link.url}</td>
-            <td className={styles.cell}>
+            <td className={`${styles.cell} ${styles.date}`}>
               {new Date(link.create_date).toLocaleDateString()}
             </td>
             <td className={styles.cell}>
