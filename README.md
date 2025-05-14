@@ -15,36 +15,15 @@ Admins can log in to a dashboard to create, update, or delete links. Each link l
 
 ## 2. Setup
 
-### 2.1 BackEnd
-
 ```bash
-# 1. Go to BackEnd folder
-cd BackEnd
-
-# 2. Install all dependencies
+# 1. Install all dependencies
 npm install
 
-# 3. Setup env
+# 2. Setup env
 cp .env.example .env
 
-# 4. run server
+# 3. run server
 npm run dev
-```
-
-### 2.2 FrontEnd
-
-```bash
-# 1. Go to FrontEnd folder
-cd FrontEnd
-
-# 2. Install all dependencies
-npm install
-
-# 3. Setup env
-cp .env.example .env
-
-# 4. run server
-npm start
 ```
 
 ## 3. Usage
