@@ -5,7 +5,6 @@ const getBaseUrl = () => new URL("/api/links", window.origin).toString();
 export const fetchLinks = async () => {
   try {
     const response = await axios.get(getBaseUrl());
-    console.log("fetchLinks:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching links:", error);
@@ -20,7 +19,6 @@ export const createLink = async (slug: string, url: string) => {
       { slug, url },
       { withCredentials: true },
     );
-    console.log("createLink:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error creating link:", error);
@@ -39,7 +37,6 @@ export const updateLink = async (
       { url, slug: newSlug },
       { withCredentials: true },
     );
-    console.log("updateLink:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error updating link:", error);
@@ -52,7 +49,6 @@ export const deleteLink = async (slug: string) => {
     const response = await axios.delete(`${getBaseUrl()}/${slug}`, {
       withCredentials: true,
     });
-    console.log("deleteLink:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error deleting link:", error);

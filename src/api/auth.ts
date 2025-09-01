@@ -9,7 +9,6 @@ export const login = async (email: string, password: string) => {
       { email, password },
       { withCredentials: true },
     );
-    console.log("login:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error logging in:", error);
@@ -24,7 +23,6 @@ export const logout = async () => {
       {},
       { withCredentials: true },
     );
-    console.log("logout:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error logging out:", error);
@@ -37,7 +35,6 @@ export const checkSession = async () => {
     const response = await axios.get(`${getBaseUrl()}/session`, {
       withCredentials: true,
     });
-    console.log("checkSession:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error checking session:", error);
@@ -52,7 +49,6 @@ export const refreshSession = async () => {
       {},
       { withCredentials: true },
     );
-    console.log("refreshSession:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error refreshing session:", error);
