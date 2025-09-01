@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import { pgTable, integer, text, timestamp, serial } from "drizzle-orm/pg-core";
 
 export const userTable = pgTable("users", {
@@ -5,6 +6,10 @@ export const userTable = pgTable("users", {
   email: text().unique().notNull(),
   password: text().unique().notNull(),
 });
+
+export const userRelations = relations(userTable, ({ many }) => ({
+  sessions: many(sessionTable),
+}));
 
 export const shortenedLinkTable = pgTable("shortened_links", {
   id: serial().primaryKey(),
@@ -24,3 +29,10 @@ export const sessionTable = pgTable("sessions", {
   sessionToken: text().notNull(),
   createdAt: timestamp().notNull().defaultNow(),
 });
+
+export const sessionRelations = relations(sessionTable, ({ one }) => ({
+  user: one(userTable, {
+    fields: [sessionTable.userId],
+    references: [userTable.id],
+  }),
+}));
