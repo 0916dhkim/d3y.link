@@ -5,7 +5,7 @@ import styles from "./PublicLinkList.module.css";
 interface Link {
   slug: string;
   url: string;
-  create_date: string;
+  createDate: string;
 }
 
 const LinkList: React.FC = () => {
@@ -35,7 +35,7 @@ const LinkList: React.FC = () => {
             <td className={`${styles.cell} ${styles.slug}`}>{link.slug}</td>
             <td className={`${styles.cell} ${styles.url}`}>{link.url}</td>
             <td className={`${styles.cell} ${styles.date}`}>
-              {new Date(link.create_date).toLocaleDateString()}
+              {new Date(link.createDate).toLocaleDateString()}
             </td>
             <td className={styles.cell}>
               <button

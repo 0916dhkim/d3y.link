@@ -7,10 +7,10 @@ import styles from "./LinkList.module.css";
 interface Link {
   slug: string;
   url: string;
-  create_date: string;
-  update_date: string;
+  createDate: string;
+  updateDate: string;
   clicks: number;
-  last_click: string | null;
+  lastClick: string | null;
 }
 
 interface Props {
@@ -50,12 +50,12 @@ const LinkList: React.FC<Props> = ({ links, onUpdate }) => {
                   <strong>{link.slug}</strong>
                 </td>
                 <td className={styles.url}>{link.url}</td>
-                <td>{new Date(link.create_date).toLocaleDateString()}</td>
-                <td>{new Date(link.update_date).toLocaleDateString()}</td>
+                <td>{new Date(link.createDate).toLocaleDateString()}</td>
+                <td>{new Date(link.updateDate).toLocaleDateString()}</td>
                 <td>{link.clicks}</td>
                 <td>
-                  {link.last_click
-                    ? new Date(link.last_click).toLocaleString()
+                  {link.lastClick
+                    ? new Date(link.lastClick).toLocaleString()
                     : "—"}
                 </td>
                 <td className={styles.actions}>

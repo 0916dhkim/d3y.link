@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
-import pool from "../db/data_connect";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import { db } from "../db/drizzle";
+import { sessionTable, userTable } from "../db/schema";
+import { eq, sql } from "drizzle-orm";
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
@@ -12,15 +14,17 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   }
 
   try {
-    const userQuery = "SELECT * FROM users WHERE email = $1;";
-    const userResult = await pool.query(userQuery, [email]);
+    const userResult = await db
+      .select()
+      .from(userTable)
+      .where(eq(userTable.email, email));
+    const user = userResult[0];
 
-    if (userResult.rows.length === 0) {
+    if (user == null) {
       res.status(401).json({ error: "Invalid email or password" });
       return;
     }
 
-    const user = userResult.rows[0];
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -30,11 +34,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     const sessionToken = crypto.randomBytes(64).toString("hex");
 
-    await pool.query(
-      `INSERT INTO sessions (user_id, session_token)
-             VALUES ($1, $2);`,
-      [user.id, sessionToken],
-    );
+    await db.insert(sessionTable).values({
+      userId: user.id,
+      sessionToken,
+    });
 
     res.cookie("session_token", sessionToken, {
       httpOnly: true,
@@ -60,9 +63,9 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
   }
 
   try {
-    await pool.query("DELETE FROM sessions WHERE session_token = $1;", [
-      sessionToken,
-    ]);
+    await db
+      .delete(sessionTable)
+      .where(eq(sessionTable.sessionToken, sessionToken));
     res.clearCookie("session_token");
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
@@ -83,26 +86,29 @@ export const checkSession = async (
   }
 
   try {
-    const sessionQuery = `
-            SELECT u.id, u.email, s.created_at
-            FROM sessions s
-            JOIN users u ON s.user_id = u.id
-            WHERE s.session_token = $1;
-        `;
-    const sessionResult = await pool.query(sessionQuery, [sessionToken]);
+    const result = await db.query.sessionTable.findFirst({
+      where: (sessionTable, { eq }) =>
+        eq(sessionTable.sessionToken, sessionToken),
+      columns: { createdAt: true },
+      with: {
+        user: {
+          columns: {
+            id: true,
+            email: true,
+          },
+        },
+      },
+    });
 
-    if (sessionResult.rows.length === 0) {
+    if (result == null) {
       res.status(401).json({ error: "Session expired" });
       return;
     }
 
     res.status(200).json({
       message: "Authenticated",
-      createdAt: sessionResult.rows[0].created_at,
-      user: {
-        id: sessionResult.rows[0].id,
-        email: sessionResult.rows[0].email,
-      },
+      createdAt: result.createdAt,
+      user: result.user,
     });
   } catch (error) {
     console.error("Session Check Error:", error);
@@ -122,14 +128,18 @@ export const refreshSession = async (
   }
 
   try {
-    const result = await pool.query(
-      `UPDATE sessions SET created_at = NOW()
-             WHERE session_token = $1
-             RETURNING created_at;`,
-      [sessionToken],
-    );
+    const result = await db
+      .update(sessionTable)
+      .set({
+        createdAt: sql`NOW()`,
+      })
+      .where(eq(sessionTable.sessionToken, sessionToken))
+      .returning({
+        createdAt: sessionTable.createdAt,
+      });
+    const updated = result[0];
 
-    if (result.rows.length === 0) {
+    if (updated == null) {
       res.status(401).json({ error: "Session not found" });
       return;
     }
@@ -143,44 +153,10 @@ export const refreshSession = async (
 
     res.status(200).json({
       message: "Session refreshed",
-      createdAt: result.rows[0].created_at,
+      createdAt: updated.createdAt,
     });
   } catch (error) {
     console.error("Refresh Session Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-// export const register = async (req: Request, res: Response): Promise<void> => {
-//     const { email, password } = req.body;
-
-//     if (!email || !password) {
-//         res.status(400).json({ error: "Email and password are required" });
-//         return;
-//     }
-
-//     try {
-//         const checkUser = await pool.query("SELECT * FROM users WHERE email = $1;", [email]);
-//         if (checkUser.rows.length > 0) {
-//             res.status(409).json({ error: "Email already exists" });
-//             return;
-//         }
-
-//         const hashedPassword = await bcrypt.hash(password, 10);
-
-//         const insertUser = await pool.query(
-//             `INSERT INTO users (email, password, last_login)
-//              VALUES ($1, $2, NOW())
-//              RETURNING id, email;`,
-//             [email, hashedPassword]
-//         );
-
-//         res.status(201).json({
-//             message: "Admin user registered successfully",
-//             user: insertUser.rows[0],
-//         });
-//     } catch (error) {
-//         console.error("Register Error:", error);
-//         res.status(500).json({ error: "Internal Server Error" });
-//     }
-// };

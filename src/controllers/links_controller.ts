@@ -1,18 +1,23 @@
 import { Request, Response } from "express";
-import pool from "../db/data_connect";
+import { db } from "../db/drizzle";
+import { shortenedLinkTable } from "../db/schema";
+import { desc, eq, sql } from "drizzle-orm";
+import assert from "node:assert";
 
 const findLinkBySlug = async (slug: string) => {
-  const result = await pool.query(
-    "SELECT * FROM shortened_links WHERE slug = $1;",
-    [slug],
-  );
-  return result.rows[0];
+  const result = await db
+    .select()
+    .from(shortenedLinkTable)
+    .where(eq(shortenedLinkTable.slug, slug));
+  return result[0] ?? null;
 };
 
 export const getLinks = async (req: Request, res: Response) => {
   try {
-    const query = "SELECT * FROM shortened_links ORDER BY create_date DESC;";
-    const { rows } = await pool.query(query);
+    const rows = await db
+      .select()
+      .from(shortenedLinkTable)
+      .orderBy(desc(shortenedLinkTable.createDate));
     res.json(rows);
   } catch (err) {
     console.error("getLinks Error: ", err);
@@ -37,11 +42,20 @@ export const createLink = async (
       res.status(409).json({ error: "Slug already exists" });
       return;
     }
-    const createQuery = `INSERT INTO shortened_links(slug, url, create_date, update_date, clicks, last_click)
-                                VALUES ($1, $2, NOW(), NOW(), 0, NULL)
-                                RETURNING *`;
-    const createLink = await pool.query(createQuery, [slug, url]);
-    res.status(201).json(createLink.rows[0]);
+    const result = await db
+      .insert(shortenedLinkTable)
+      .values({
+        slug,
+        url,
+        createDate: sql`NOW()`,
+        updateDate: sql`NOW()`,
+        clicks: 0,
+        lastClick: null,
+      })
+      .returning();
+    const createdLink = result[0];
+    assert(createdLink);
+    res.status(201).json(createdLink);
   } catch (err) {
     console.error("createLink Error: ", err);
     res.status(500).json({ error: "Internet Server Error" });
@@ -52,18 +66,21 @@ export const gotoLink = async (req: Request, res: Response): Promise<void> => {
   const { slug } = req.params;
 
   try {
-    const updateQuery = `
-            UPDATE shortened_links
-            SET clicks = clicks + 1, last_click = NOW()
-            WHERE slug = $1
-            RETURNING url;
-        `;
-    const findingLink = await pool.query(updateQuery, [slug]);
-    if (findingLink.rows.length === 0) {
+    assert(slug != null);
+    const result = await db
+      .update(shortenedLinkTable)
+      .set({
+        clicks: sql`${shortenedLinkTable.clicks} + 1`,
+        lastClick: sql`NOW()`,
+      })
+      .where(eq(shortenedLinkTable.slug, slug))
+      .returning();
+    const targetLink = result[0];
+    if (targetLink == null) {
       res.status(404).json({ error: "Slug not found" });
       return;
     }
-    res.redirect(findingLink.rows[0].url);
+    res.redirect(targetLink.url);
   } catch (err) {
     console.error("gotoLink Error: ", err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -99,22 +116,23 @@ export const updateLink = async (
         return;
       }
     }
-    const updateQuery = `UPDATE shortened_links
-                        SET url = $1, slug = $2, update_date = NOW()
-                        WHERE slug = $3
-                        RETURNING *;`;
-    const updateLink = await pool.query(updateQuery, [
-      url,
-      newSlug,
-      originalSlug,
-    ]);
-    if (updateLink.rows.length === 0) {
+    const result = await db
+      .update(shortenedLinkTable)
+      .set({
+        url,
+        slug: newSlug,
+        updateDate: sql`NOW()`,
+      })
+      .where(eq(shortenedLinkTable.slug, originalSlug))
+      .returning();
+    const updatedLink = result[0];
+    if (updateLink == null) {
       res.status(404).json({ error: "Failed to update link" });
       return;
     }
     res.json({
       message: "Link updated successfully",
-      link: updateLink.rows[0],
+      link: updatedLink,
     });
   } catch (err) {
     console.error("updateLink Error: ", err);
@@ -129,10 +147,12 @@ export const deleteLink = async (
   const { slug } = req.params;
 
   try {
-    const deleteQuery = `DELETE FROM shortened_links 
-                                WHERE slug = $1 RETURNING *;`;
-    const deleteLink = await pool.query(deleteQuery, [slug]);
-    if (deleteLink.rows.length === 0) {
+    assert(slug != null);
+    const result = await db
+      .delete(shortenedLinkTable)
+      .where(eq(shortenedLinkTable.slug, slug))
+      .returning();
+    if (result.length === 0) {
       res.status(404).json({ error: "Slug not found" });
       return;
     }
