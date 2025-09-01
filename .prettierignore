@@ -1,5 +1,6 @@
 # Generated code
 drizzle/
+.react-router/
 
 # Dokploy edits this file.
 docker-compose.yaml
