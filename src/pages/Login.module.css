@@ -63,3 +63,21 @@
 .button:hover {
   background-color: #000;
 }
+
+.toggleButton {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  padding: 8px;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.toggleButton:hover {
+  color: #000;
+}

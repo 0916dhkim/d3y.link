@@ -42,6 +42,29 @@ export const checkSession = async () => {
   }
 };
 
+export const register = async (email: string, password: string) => {
+  try {
+    const response = await axios.post(`${getBaseUrl()}/register`, {
+      email,
+      password,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error registering:", error);
+    throw error;
+  }
+};
+
+export const hasUsers = async () => {
+  try {
+    const response = await axios.get(`${getBaseUrl()}/has-users`);
+    return response.data;
+  } catch (error) {
+    console.error("Error checking users:", error);
+    throw error;
+  }
+};
+
 export const refreshSession = async () => {
   try {
     const response = await axios.post(
