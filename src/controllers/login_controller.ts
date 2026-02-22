@@ -3,7 +3,57 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { db } from "../db/drizzle";
 import { sessionTable, userTable } from "../db/schema";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, count } from "drizzle-orm";
+
+export const hasUsers = async (
+  _req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const result = await db
+      .select({ userCount: count() })
+      .from(userTable);
+    res.status(200).json({ hasUsers: (result[0]?.userCount ?? 0) > 0 });
+  } catch (error) {
+    console.error("Has Users Check Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const register = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    res.status(400).json({ error: "Email and password are required" });
+    return;
+  }
+
+  try {
+    const userCount = await db
+      .select({ userCount: count() })
+      .from(userTable);
+
+    if ((userCount[0]?.userCount ?? 0) > 0) {
+      res.status(403).json({ error: "Registration is disabled" });
+      return;
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    await db.insert(userTable).values({
+      email,
+      password: hashedPassword,
+    });
+
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (error) {
+    console.error("Register Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;

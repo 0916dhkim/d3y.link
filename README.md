@@ -264,3 +264,9 @@ This project contains **both FrontEnd and BackEnd** code.
 - `LinkList.tsx`: Table displaying all links in the admin dashboard
 - `ProtectedRoute.tsx`: Wrapper to restrict routes to authenticated users only
 - `PublicLinkList.tsx`: Displays public-facing list of links on the homepage
+
+## TODO
+
+- [ ] Add `req.body` input validation — all controllers currently use `req.body` as `any` without type checking. Consider adding `typeof` guards or a schema validation library like zod.
+  - `login_controller.ts` — `email`, `password` (register, login)
+  - `links_controller.ts` — `slug`, `url` (createLink, updateLink)
