@@ -5,6 +5,7 @@ import { fetchLinks } from "../api/links";
 import LinkList from "../components/LinkList";
 import CreateLinkModal from "../components/CreateLinkModal";
 import styles from "./Dashboard.module.css";
+import logo from "../assets/logo_crop.png";
 
 const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -79,6 +80,7 @@ const Dashboard: React.FC = () => {
     <div className={styles.container}>
       <aside className={styles.sidebar}>
         <h1 className={styles.logo}>
+          <img src={logo} alt="logo" className={styles.logoImage} />
           d3y.link
           <br />
           Dashboard
