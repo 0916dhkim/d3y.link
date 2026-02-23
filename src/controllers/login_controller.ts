@@ -5,14 +5,9 @@ import { db } from "../db/drizzle";
 import { sessionTable, userTable } from "../db/schema";
 import { eq, sql, count } from "drizzle-orm";
 
-export const hasUsers = async (
-  _req: Request,
-  res: Response,
-): Promise<void> => {
+export const hasUsers = async (_req: Request, res: Response): Promise<void> => {
   try {
-    const result = await db
-      .select({ userCount: count() })
-      .from(userTable);
+    const result = await db.select({ userCount: count() }).from(userTable);
     res.status(200).json({ hasUsers: (result[0]?.userCount ?? 0) > 0 });
   } catch (error) {
     console.error("Has Users Check Error:", error);
@@ -20,10 +15,7 @@ export const hasUsers = async (
   }
 };
 
-export const register = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const register = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -32,9 +24,7 @@ export const register = async (
   }
 
   try {
-    const userCount = await db
-      .select({ userCount: count() })
-      .from(userTable);
+    const userCount = await db.select({ userCount: count() }).from(userTable);
 
     if ((userCount[0]?.userCount ?? 0) > 0) {
       res.status(403).json({ error: "Registration is disabled" });
