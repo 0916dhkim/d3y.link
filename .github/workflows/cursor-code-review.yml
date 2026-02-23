@@ -44,20 +44,6 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          BLOCKING_REVIEW: ${{ vars.BLOCKING_REVIEW || 'false' }}
         run: |
           PROMPT=$(envsubst < .github/prompts/code-review.md)
           agent --force --model "$MODEL" --output-format=text --print "$PROMPT"
-
-      - name: Check blocking review results
-        if: env.BLOCKING_REVIEW == 'true'
-        run: |
-          echo "Checking for critical issues..."
-          echo "CRITICAL_ISSUES_FOUND: ${CRITICAL_ISSUES_FOUND:-unset}"
-
-          if [ "${CRITICAL_ISSUES_FOUND:-false}" = "true" ]; then
-            echo "❌ Critical issues found and blocking review is enabled. Failing the workflow."
-            exit 1
-          else
-            echo "✅ No blocking issues found."
-          fi

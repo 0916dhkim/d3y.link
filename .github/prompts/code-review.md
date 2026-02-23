@@ -6,7 +6,6 @@ You are operating in a GitHub Actions runner performing automated code review. T
 - PR Number: ${PR_NUMBER}
 - PR Head SHA: ${PR_HEAD_SHA}
 - PR Base SHA: ${PR_BASE_SHA}
-- Blocking Review: ${BLOCKING_REVIEW}
 
 ## Objectives
 
@@ -58,9 +57,3 @@ Avoid duplicates: skip if similar feedback already exists on or near the same li
   - Build a JSON array of comments like: `[{ "path": "<file>", "position": <diff_position>, "body": "..." }]`
   - Submit via: `gh api repos/${REPO}/pulls/${PR_NUMBER}/reviews -f event=COMMENT -f body="$SUMMARY" -f comments='[$COMMENTS_JSON]'`
 - Do NOT use: `gh pr review --approve` or `--request-changes`
-
-## Blocking behavior
-
-- If BLOCKING_REVIEW is true and any 🚨 or 🔒 issues were posted: `echo "CRITICAL_ISSUES_FOUND=true" >> $GITHUB_ENV`
-- Otherwise: `echo "CRITICAL_ISSUES_FOUND=false" >> $GITHUB_ENV`
-- Always set CRITICAL_ISSUES_FOUND at the end
