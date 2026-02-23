@@ -270,3 +270,4 @@ This project contains **both FrontEnd and BackEnd** code.
 - [ ] Add `req.body` input validation — all controllers currently use `req.body` as `any` without type checking. Consider adding `typeof` guards or a schema validation library like zod.
   - `login_controller.ts` — `email`, `password` (register, login)
   - `links_controller.ts` — `slug`, `url` (createLink, updateLink)
+- [ ] Add Prettier formatting check to GitHub Actions CI pipeline — currently the workflow only runs `tsc` for type checking. It should also run `prettier --check .` to catch formatting issues before merging.
